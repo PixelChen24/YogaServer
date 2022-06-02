@@ -3,48 +3,48 @@ import numpy as np
 Radian=np.pi/180
 
 
-def get_shoulder_L(pose_landmarks):
+def get_shoulder_L(pose_landmarks)->float:
     pin1=pose_landmarks[23]
     pin2=pose_landmarks[13]
     joint=pose_landmarks[11]
     return calAngle(pin1, pin2, joint)
-def get_shoulder_R(pose_landmarks):
+def get_shoulder_R(pose_landmarks)->float:
     pin1=pose_landmarks[24]
     pin2=pose_landmarks[14]
     joint=pose_landmarks[12]
     return calAngle(pin1, pin2, joint)
 
 
-def get_elbow_L(pose_landmarks):
+def get_elbow_L(pose_landmarks)->float:
     pin1=pose_landmarks[11]
     pin2=pose_landmarks[15]
     joint=pose_landmarks[13]
     return calAngle(pin1, pin2, joint)
-def get_elbow_R(pose_landmarks):
+def get_elbow_R(pose_landmarks)->float:
     pin1=pose_landmarks[12]
     pin2=pose_landmarks[16]
     joint=pose_landmarks[14]
     return calAngle(pin1, pin2, joint)
 
 
-def get_hip_L(pose_landmarks):
+def get_hip_L(pose_landmarks)->float:
     pin1=pose_landmarks[11]
     pin2=pose_landmarks[25]
     joint=pose_landmarks[23]
     return calAngle(pin1, pin2, joint)
-def get_hip_R(pose_landmarks):
+def get_hip_R(pose_landmarks)->float:
     pin1=pose_landmarks[12]
     pin2=pose_landmarks[26]
     joint=pose_landmarks[24]
     return calAngle(pin1, pin2, joint)
 
 
-def get_knee_L(pose_landmarks):
+def get_knee_L(pose_landmarks)->float:
     pin1=pose_landmarks[23]
     pin2=pose_landmarks[27]
     joint=pose_landmarks[25]
     return calAngle(pin1, pin2, joint)
-def get_knee_R(pose_landmarks):
+def get_knee_R(pose_landmarks)->float:
     pin1=pose_landmarks[24]
     pin2=pose_landmarks[28]
     joint=pose_landmarks[26]
@@ -61,4 +61,4 @@ def calAngle(pin1,pin2,joint):
     inner_dot=np.dot(vector1,vector2.T)
     length1=np.linalg.norm(vector1)
     length2=np.linalg.norm(vector2)
-    return np.arccos(1.0*inner_dot/length1/length2)/Radian
+    return (np.arccos(1.0*inner_dot/length1/length2)/Radian)[0][0]

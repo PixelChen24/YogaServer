@@ -3,7 +3,7 @@ import warnings
 def get_score(standard_angle,measured_angle,weights):
     if sum(weights)!=1:
         warnings.warn("Weights settings not correct!")
-    return weights*(1-abs(standard_angle-measured_angle)/standard_angle)
+    return sum(weights*(1-abs(standard_angle-measured_angle)/standard_angle))
 
 
 if __name__=="__main__":
