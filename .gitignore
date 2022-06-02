@@ -1,2 +1,3 @@
 test_log.txt
 test_py.py
+*.pyc
