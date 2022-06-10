@@ -20,12 +20,15 @@ sports=["gangling"]
 
 @app.route("/JudgeScore",methods=["POST"])
 def JudgeScoreResponse():
-    if flask.request.files.get("image"):
-        image_bytes=flask.request.files["image"].read()
+    print("Receive request")
+    if flask.request.data:
+        request_data=flask.request.get_json()
+        print(request_data)
+        image_bytes=request_data["image"]
         image_numpy=np.asarray(bytearray(image_bytes),dtype=np.uint8)
         image_opencv=cv.imdecode(image_numpy,-1)
         image_rgb=cv.cvtColor(image_opencv, cv.COLOR_BGR2RGB)
-        sports_type=int(flask.request.files["type"].read())
+        sports_type=request_data["type"]
     return JudgeScore(sports_type=sports_type, image=image_rgb)
 
 def JudgeScore(sports_type,image):
@@ -79,7 +82,7 @@ def JudgeScore(sports_type,image):
     
 
 if __name__=="__main__":
-    app.run(port="5000")
+    app.run(host="0.0.0.0",port="5000")
     
     # video_capture=cv.VideoCapture(0)
     # cv.namedWindow("img",0)
