@@ -12,12 +12,11 @@ import flask
 app=Flask(__name__)
 
 
-std=np.array([90,90,90,90])  # 测试动作为举哑铃动作，要求肩关节和肘关节90度
-w=np.array([0.25,0.25,0.25,0.25])
-
 mp_pose=mp.solutions.pose
 mp_drawing=mp.solutions.drawing_utils
 pose_detector=mp_pose.Pose(static_image_mode=False,enable_segmentation=True,min_detection_confidence=0.5)
+
+sports=["gangling"]
 
 @app.route("/JudgeScore",methods=["POST"])
 def JudgeScoreResponse():
@@ -38,10 +37,13 @@ def JudgeScore(sports_type,image):
             [1,2]
         ]
     }
-    std_csv_file_path="StdPoseDatabase/Points/"+sports_type+".csv"
+
+    sports_name=sports[sports_type]
+    std_csv_file_path="StdPoseDatabase/Points/"+sports_name+".csv"
     std_data=np.array(pd.read_csv(std_csv_file_path))
-    std_angles=std_data[:-1,:]
+    std_angles=std_data[:-1,:][0]
     std_weights=std_data[-1,:]
+    print(std_angles,std_weights)
 
 
     if sports_type is None or image is None:
