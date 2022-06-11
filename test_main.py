@@ -6,7 +6,7 @@ import mediapipe as mp
 import numpy as np
 import pandas as pd
 import cv2 as cv
-
+import json
 from flask import Flask,request
 import flask
 app=Flask(__name__)
@@ -21,6 +21,8 @@ sports=["gangling"]
 @app.route("/JudgeScore",methods=["POST"])
 def JudgeScoreResponse():
     print("Receive request")
+    sports_type=0
+    image_rgb=None
     if flask.request.data:
         request_data=flask.request.get_json()
         print(request_data)
@@ -29,6 +31,7 @@ def JudgeScoreResponse():
         image_opencv=cv.imdecode(image_numpy,-1)
         image_rgb=cv.cvtColor(image_opencv, cv.COLOR_BGR2RGB)
         sports_type=request_data["type"]
+    
     return JudgeScore(sports_type=sports_type, image=image_rgb)
 
 def JudgeScore(sports_type,image):
@@ -46,16 +49,15 @@ def JudgeScore(sports_type,image):
     std_data=np.array(pd.read_csv(std_csv_file_path))
     std_angles=std_data[:-1,:][0]
     std_weights=std_data[-1,:]
-    print(std_angles,std_weights)
 
 
     if sports_type is None or image is None:
         return_dict["status"]="No Params"
-        return return_dict
+        return json.dumps(return_dict)
     detect_result=pose_detector.process(image)
     if detect_result.pose_landmarks is None:
         return_dict["status"]="No detection results"
-        return return_dict
+        return json.dumps(return_dict)
 
     pose_landmark=detect_result.pose_landmarks.landmark  # 获取33个检测结果 
     points=[]
@@ -77,8 +79,9 @@ def JudgeScore(sports_type,image):
 
     return_dict["score"][0]=score
     return_dict["status"]="Success"
-    
-    return return_dict
+
+    return json.dumps(return_dict)
+
     
 
 if __name__=="__main__":
