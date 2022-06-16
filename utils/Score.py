@@ -4,7 +4,7 @@ body_angle=     ["左肩","右肩","左手肘","右手肘","左髋关节","右�
 body_suggestion=["左手大臂","右手大臂","左手小臂","右手小臂","左大腿","右大腿","左小腿","右小腿"]
 excessive_suggestion=["向下收束一点","向下收束一点","向上抬一点","向上抬一点","向上抬一点","向上抬一点","向内收","向内收"]
 lack_suggestion=     ["向上伸展一点","向上伸展一点","向下放一点","向下放一点","向内收一点","向内收一点","向外伸展","向外伸展"]
-
+allow_error=5
 
 def get_score(standard_angle,measured_angle,weights):
     if standard_angle.shape!=measured_angle.shape:
@@ -16,7 +16,7 @@ def get_score(standard_angle,measured_angle,weights):
     return sum(weights[chosen_index]*(1-abs(standard_angle[chosen_index]-measured_angle[chosen_index])/standard_angle[chosen_index]))
 
 
-def get_suggestion(standard_angle,measured_angle,weights)->list:
+def get_suggestion(standard_angle,measured_angle,weights)->str:
     suggestions=[]
     if standard_angle.shape!=measured_angle.shape:
         warnings.warn("Fatal Error: StdAngle Size does not match Measured Size!")
@@ -39,20 +39,21 @@ def get_suggestion(standard_angle,measured_angle,weights)->list:
 
 def angle_suggestion(body_position,delta):
     suggestion=""
-    if delta[body_position]>5:
+    if delta[body_position]>allow_error:
         suggestion = body_angle[body_position]+"角度偏大了 "
-    if delta[body_position]<-5:
+    elif delta[body_position]<-allow_error:
         suggestion = body_angle[body_position]+"角度偏小了 "
     return suggestion
 
 
 def detail_suggestion(body_position,delta):
     suggestion=""
-    if delta[body_position]>5:
+    if delta[body_position]>allow_error:
         suggestion = body_suggestion[body_position]+excessive_suggestion[body_position]+"才能更加标准哦"
-    if delta[body_position]<-5:
+    elif delta[body_position]<-allow_error:
         suggestion = body_suggestion[body_position]+lack_suggestion[body_position]+"才能更加标准哦"
-    
+    else:
+        suggestion="做得非常棒！"
     return suggestion
 
 

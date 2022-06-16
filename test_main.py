@@ -1,7 +1,7 @@
 import sys
 from utils.DataBase import check_database
 from utils.CalculateAngle import get_elbow_L,get_elbow_R,get_hip_L,get_hip_R,get_knee_L,get_knee_R,get_shoulder_L,get_shoulder_R
-from utils.Score import get_score
+from utils.Score import get_score,get_suggestion
 import mediapipe as mp
 import numpy as np
 import pandas as pd
@@ -41,8 +41,8 @@ def JudgeScore(sports_type,image):
     global cnt
     return_dict={
         "status":"Fail",
-        "score":[0,0,0],
-        "suggestions":["No suggestions","No suggestions","No suggestions"],
+        "score":0,
+        "suggestions":"No suggestions",
         "points":[
             [1,2]
         ]
@@ -79,14 +79,17 @@ def JudgeScore(sports_type,image):
     hip_R=get_hip_R(pose_landmark)
     knee_L=get_knee_L(pose_landmark)
     knee_R=get_knee_R(pose_landmark)
-    score=get_score(standard_angle=std_angles,measured_angle=np.array([shoulder_L,shoulder_R,elbow_L,elbow_R,hip_L,hip_R,knee_L,knee_R]),weights=std_weights)
+    measured_angles=np.array([shoulder_L,shoulder_R,elbow_L,elbow_R,hip_L,hip_R,knee_L,knee_R])
+    score=get_score(standard_angle=std_angles,measured_angle=measured_angles,weights=std_weights)
     # mp_drawing.draw_landmarks(image=image, 
     #         landmark_list=detect_result.pose_landmarks,
     #         connections=mp_pose.POSE_CONNECTIONS
     #     )
     # cv.imwrite(str(cnt)+"a.jpg", image)
     # cnt+=1
-    return_dict["score"][0]=score
+    suggestion=get_suggestion(standard_angle=std_angles, measured_angle=measured_angles, weights=std_weights)
+    return_dict["score"]=score
+    return_dict["suggestions"]=suggestion
     return_dict["status"]="Success"
     
     return json.dumps(return_dict)
