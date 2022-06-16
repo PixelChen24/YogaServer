@@ -1,5 +1,5 @@
 import sys
-from utils.DataBase import check_database
+# from utils.DataBase import check_database
 from utils.CalculateAngle import get_elbow_L,get_elbow_R,get_hip_L,get_hip_R,get_knee_L,get_knee_R,get_shoulder_L,get_shoulder_R
 from utils.Score import get_score,get_suggestion
 import mediapipe as mp
@@ -23,7 +23,6 @@ sports=["classic","gangling","lashen"]
 def JudgeScoreResponse():
     
     sports_type=0
-    image_rgb=None
     if request.get_json():
         print("Receive request")
         json_data=request.get_json()
@@ -31,18 +30,17 @@ def JudgeScoreResponse():
         image_64=base64.b64decode(image_str)
         image_arr=np.fromstring(image_64,np.uint8)
         image_opencv=cv.imdecode(image_arr,cv.IMREAD_COLOR)
-        print(image_opencv.shape)
         sports_type=json_data["type"]
     return_result=JudgeScore(sports_type=int(sports_type), image=image_opencv)
-    print(return_result)
+
     return return_result
 
 def JudgeScore(sports_type,image):
     global cnt
     return_dict={
         "status":"Fail",
-        "score":0,
-        "suggestions":"No suggestions",
+        "score":[0],
+        "suggestions":["No suggestions"],
         "points":[
             [1,2]
         ]
@@ -88,8 +86,8 @@ def JudgeScore(sports_type,image):
     # cv.imwrite(str(cnt)+"a.jpg", image)
     # cnt+=1
     suggestion=get_suggestion(standard_angle=std_angles, measured_angle=measured_angles, weights=std_weights)
-    return_dict["score"]=score
-    return_dict["suggestions"]=suggestion
+    return_dict["score"][0]=score
+    return_dict["suggestions"][0]=suggestion
     return_dict["status"]="Success"
     
     return json.dumps(return_dict)
