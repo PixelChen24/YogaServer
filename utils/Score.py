@@ -1,9 +1,9 @@
 import numpy as np
 import warnings
 body_angle=     ["左肩","右肩","左手肘","右手肘","左髋关节","右髋关节","左膝","右膝"]
-body_suggestion=["左手大臂","右手大臂","左手小臂","右手小臂","腰","腰","左小腿","右小腿"]
-excessive_suggestion=["向下收束一点","向下收束一点","向上抬一点","向上抬一点","向左弯","向右弯","向内收","向内收"]
-lack_suggestion=     ["向上伸展一点","向上伸展一点","向下放一点","向下放一点","向右弯","向左弯","向外伸展","向外伸展"]
+body_suggestion=["左手大臂","右手大臂","左手小臂","右手小臂","左大腿","右大腿","左小腿","右小腿"]
+excessive_suggestion=["向下收束一点","向下收束一点","向上抬一点","向上抬一点","向上抬一点","向上抬一点","向内收","向内收"]
+lack_suggestion=     ["向上伸展一点","向上伸展一点","向下放一点","向下放一点","向内收一点","向内收一点","向外伸展","向外伸展"]
 
 
 def get_score(standard_angle,measured_angle,weights):
@@ -16,7 +16,7 @@ def get_score(standard_angle,measured_angle,weights):
     return sum(weights[chosen_index]*(1-abs(standard_angle[chosen_index]-measured_angle[chosen_index])/standard_angle[chosen_index]))
 
 
-def get_suggestion(standard_angle,measured_angle,weights):
+def get_suggestion(standard_angle,measured_angle,weights)->list:
     suggestions=[]
     if standard_angle.shape!=measured_angle.shape:
         warnings.warn("Fatal Error: StdAngle Size does not match Measured Size!")
@@ -34,7 +34,7 @@ def get_suggestion(standard_angle,measured_angle,weights):
     suggestions.append(first_angle_suggestion+first_detail_suggestion)
     suggestions.append(second_angle_suggestion+second_detail_suggestion)
 
-    return suggestions
+    return first_angle_suggestion+first_detail_suggestion
 
 
 def angle_suggestion(body_position,delta):

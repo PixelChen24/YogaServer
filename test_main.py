@@ -17,7 +17,7 @@ mp_pose=mp.solutions.pose
 mp_drawing=mp.solutions.drawing_utils
 pose_detector=mp_pose.Pose(static_image_mode=False,enable_segmentation=True,min_detection_confidence=0.5)
 
-sports=["gangling"]
+sports=["classic","gangling","lashen"]
 
 @app.route("/JudgeScore",methods=["POST"])
 def JudgeScoreResponse():
