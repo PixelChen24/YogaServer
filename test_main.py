@@ -9,8 +9,9 @@ import cv2 as cv
 import json
 from flask import Flask,request
 import flask
+import base64
 app=Flask(__name__)
-
+cnt=0
 
 mp_pose=mp.solutions.pose
 mp_drawing=mp.solutions.drawing_utils
@@ -20,19 +21,24 @@ sports=["gangling"]
 
 @app.route("/JudgeScore",methods=["POST"])
 def JudgeScoreResponse():
-    print("Receive request")
+    
     sports_type=0
     image_rgb=None
-    if request.values:
-        image_str=request.values.get("image")
-        image_numpy=np.asarray(bytearray(eval(image_str)),dtype=np.uint8)
-        image_opencv=cv.imdecode(image_numpy,-1)
-        image_rgb=cv.cvtColor(image_opencv, cv.COLOR_BGR2RGB)
-        sports_type=request.values.get("type")
-    
-    return JudgeScore(sports_type=int(sports_type), image=image_rgb)
+    if request.get_json():
+        print("Receive request")
+        json_data=request.get_json()
+        image_str=json_data["image"]
+        image_64=base64.b64decode(image_str)
+        image_arr=np.fromstring(image_64,np.uint8)
+        image_opencv=cv.imdecode(image_arr,cv.IMREAD_COLOR)
+        print(image_opencv.shape)
+        sports_type=json_data["type"]
+    return_result=JudgeScore(sports_type=int(sports_type), image=image_opencv)
+    print(return_result)
+    return return_result
 
 def JudgeScore(sports_type,image):
+    global cnt
     return_dict={
         "status":"Fail",
         "score":[0,0,0],
@@ -74,16 +80,21 @@ def JudgeScore(sports_type,image):
     knee_L=get_knee_L(pose_landmark)
     knee_R=get_knee_R(pose_landmark)
     score=get_score(standard_angle=std_angles,measured_angle=np.array([shoulder_L,shoulder_R,elbow_L,elbow_R,hip_L,hip_R,knee_L,knee_R]),weights=std_weights)
-
+    # mp_drawing.draw_landmarks(image=image, 
+    #         landmark_list=detect_result.pose_landmarks,
+    #         connections=mp_pose.POSE_CONNECTIONS
+    #     )
+    # cv.imwrite(str(cnt)+"a.jpg", image)
+    # cnt+=1
     return_dict["score"][0]=score
     return_dict["status"]="Success"
-
+    
     return json.dumps(return_dict)
 
     
 
 if __name__=="__main__":
-    app.config["JSON_AS_ASCII"]=False
+    # app.config["JSON_AS_ASCII"]=False
     app.run(host="0.0.0.0",port="5000")
     
     # video_capture=cv.VideoCapture(0)
