@@ -16,7 +16,7 @@
     ├── DataBase.py
     └── Score.py
 ```
-* 主程序运行在`main.py`
+* 主程序运行在`test_main.py`
 * utils存放函数
     * `CalculateAngle.py`计算关节角度。
     * `DataBase.py`用于管理数据。主要是当数据库中增加或者删除标准数据时，自动生成或删除姿势点数据。**当前未实现**。
